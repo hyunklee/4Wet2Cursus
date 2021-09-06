@@ -6,7 +6,7 @@
 /*   By: hyunklee <hyunklee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/04 00:53:07 by hyunklee          #+#    #+#             */
-/*   Updated: 2021/09/04 00:55:13 by hyunklee         ###   ########.fr       */
+/*   Updated: 2021/09/05 23:21:28 by hyunklee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,17 +24,17 @@ void	safe_free(void **ptr)
 void	init_option(t_option *option)
 {
 	option->format = 0;
-    option->plus = 0;
-    option->zero = 0;
-    option->minus = 0;
-    option->precision = -1;
-    option->width = 0;
-    option->sharp = 0;
-    option->empty = 0;
+	option->plus = 0;
+	option->zero = 0;
+	option->minus = 0;
+	option->precision = -1;
+	option->width = 0;
+	option->sharp = 0;
+	option->empty = 0;
 	option->sign = 0;
 }
 
-int		check_error(t_option *option)
+int	check_error(t_option *option)
 {
 	if (!option->format || !option->width)
 		return (-1);
@@ -50,10 +50,10 @@ int		check_error(t_option *option)
 	return (1);
 }
 
-int		atoi_for_pf(const char **format)
+int	atoi_for_pf(const char **format)
 {
-	long long temp;
-	int       ret;
+	long long	temp;
+	int			ret;
 
 	temp = 0;
 	if (**format == '-')
@@ -70,7 +70,7 @@ int		atoi_for_pf(const char **format)
 	return (ret);
 }
 
-int		record_option(const char c, t_option *option)
+int	record_option(const char c, t_option *option)
 {
 	if (c == '-')
 		option->minus = 1;

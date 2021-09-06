@@ -6,13 +6,13 @@
 /*   By: hyunklee <hyunklee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/04 01:42:23 by hyunklee          #+#    #+#             */
-/*   Updated: 2021/09/04 01:51:24 by hyunklee         ###   ########.fr       */
+/*   Updated: 2021/09/06 02:21:00 by hyunklee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-int	count_number(long n, int base_num)
+int	count_number(int n, int base_num)
 {
 	int	cnt;
 
@@ -21,47 +21,47 @@ int	count_number(long n, int base_num)
 		cnt++;
 	while (n != 0)
 	{
-		n /= (long)base_num;
+		n /= (int)base_num;
 		cnt++;
 	}
 	return (cnt);
 }
 
-char	*memtoa(void *mem)
+int u_count_number(unsigned long long n, int base_num, char format)
 {
-	long	mem_cp;
-	char	*ret;
-	int		cnt;
+	int cnt;
 
-	mem_cp = (long)mem;
-	cnt = count_number(mem_cp, 16) + 2;
-	ret = (char *)malloc(sizeof(char) * (cnt + 1));
-	if (!ret)
-		return (0);
-	ret[cnt] = 0;
-	ret[0] = '0';
-	ret[1] = 'x';
-	while (--cnt > 1)
+	cnt = 0;
+	while (n != 0)
 	{
-		ret[cnt] = BASE[mem_cp % 16];
-		if (ret[cnt] >= 'A' && ret[cnt] <= 'F')
-			ret[cnt] += 32;
-		mem_cp /= 16;
+		n /= (unsigned long long)base_num;
+		cnt++;
 	}
-	return (ret);
+	if (format == 'p')
+		cnt += 2;
+	return (cnt);
 }
 
-char	*unittoa(unsigned int n)
+char	*ft_itoa(int n)
 {
 	int		cnt;
 	char	*ret;
 
+	if (n == 0)
+		return (ft_strdup("0"));
+	if (n == -2147483648)
+		return (ft_strdup("-2147483648"));
 	cnt = count_number((long)n, 10);
 	ret = (char *)malloc(sizeof(char) * (cnt + 1));
 	if (!ret)
 		return (0);
+	if (n < 0)
+	{
+		ret[0] = '-';
+		n *= -1;
+	}
 	ret[cnt] = '\0';
-	while (--cnt >= 0)
+	while (--cnt >= 0 && n > 0)
 	{
 		ret[cnt] = BASE[n % 10];
 		n /= 10;
@@ -69,44 +69,44 @@ char	*unittoa(unsigned int n)
 	return (ret);
 }
 
-char	*change_to_str(long n, int base_num, char format)
+char	*change_to_str(unsigned long long n, int base_num, char format)
 {
 	int		cnt;
 	char	*ret;
 
-	cnt = count_number(n, base_num);
+	cnt = u_count_number(n, base_num, format);
 	ret = (char *)malloc(sizeof(char) * (cnt + 1));
 	if (!ret)
 		return (0);
 	ret[cnt] = '\0';
-	if (n < 0)
+	if (format == 'p')
 	{
-		ret[0] = '-';
-		n *= -1;
+		ret[0] = '0';
+		ret[1] = 'x';
 	}
-	while (--cnt >= 0)
+	while (--cnt >= 0 && n > 0)
 	{
-		if (cnt == 0 && ret[cnt] == '-')
-			break ;
-		ret[cnt] = BASE[n % (long)base_num];
-		if (format == 'x' && (ret[cnt] >= 'A' && ret[cnt] <= 'F'))
-			ret[cnt] += 32;
-		n /= (long)base_num;
+		ret[cnt] = BASE[n % (unsigned long long)base_num];
+		if (format == 'X' && (ret[cnt] >= 'a' && ret[cnt] <= 'f'))
+			ret[cnt] -= 32;
+		n /= (unsigned long long)base_num;
 	}
 	return (ret);
 }
 
-char	*itoa_base(int n, char format)
+char	*unitoa_base(unsigned long long n, char format)
 {
-	int		base_num;
-	long	long_num;
+	int	base_num;
 
 	if (n == 0)
-		return ("0");
-	long_num = (long)n;
-	if (format == 'i' || format == 'd')
+	{	if (format == 'p')
+			return (ft_strdup("0x0"));
+		else
+			return (ft_strdup("0"));
+	}
+	if (format == 'u')
 		base_num = 10;
 	else
 		base_num = 16;
-	return (change_to_str(long_num, base_num, format));
+	return (change_to_str(n, base_num, format));
 }

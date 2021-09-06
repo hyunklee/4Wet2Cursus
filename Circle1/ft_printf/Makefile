@@ -1,4 +1,4 @@
-NAME = ft_printf.a
+NAME = libftprintf.a
 HEADER = ft_printf.h
 CC = gcc
 CFLAGS = -c -Wall -Wextra -Werror
@@ -6,12 +6,15 @@ AR = ar rc
 RM = rm -f
 SOURCES = ft_printf.c \
 			format.c \
+			format2.c \
 			parse.c \
 			utils.c \
 			utils2.c
 
+
 BONUS_SRCS = ft_printf.c \
 			format.c \
+			format2.c \
 			parse.c \
 			utils.c \
 			utils2.c

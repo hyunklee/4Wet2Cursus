@@ -6,7 +6,7 @@
 /*   By: hyunklee <hyunklee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/04 00:50:03 by hyunklee          #+#    #+#             */
-/*   Updated: 2021/09/04 01:18:03 by hyunklee         ###   ########.fr       */
+/*   Updated: 2021/09/06 00:16:47 by hyunklee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,11 +35,11 @@ char	*apply_precision_s(char *tmp, int precision)
 {
 	char	*ret;
 	int		i;
-	
+
 	i = 0;
 	if (precision < 0)
 		return (tmp);
-	if ((ft_len(tmp) > precision))
+	if ((ft_len(tmp) > precision) && tmp)
 	{
 		ret = (char *)malloc(sizeof(char) * (precision + 1));
 		if (!ret)
@@ -58,6 +58,8 @@ char	*apply_precision_s(char *tmp, int precision)
 
 char	*apply_sign(char *tmp, t_option *option)
 {
+	if (!tmp)
+		return (0);
 	if ((option->format == 'd' || option->format == 'i') && !(option->sign))
 	{
 		if (option->empty)
@@ -74,10 +76,10 @@ char	*apply_sign(char *tmp, t_option *option)
 
 char	*apply_width(char *tmp, t_option *option)
 {
-	int len;
-	int	i;
-	char *ret;
-	char c;
+	int		len;
+	int		i;
+	char	*ret;
+	char	c;
 
 	i = 0;
 	c = ' ';
