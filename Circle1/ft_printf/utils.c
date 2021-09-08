@@ -5,95 +5,86 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: hyunklee <hyunklee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2021/09/04 00:46:22 by hyunklee          #+#    #+#             */
-/*   Updated: 2021/09/06 01:15:43 by hyunklee         ###   ########.fr       */
+/*   Created: 2021/09/04 00:53:07 by hyunklee          #+#    #+#             */
+/*   Updated: 2021/09/07 23:34:11 by hyunklee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-char	is_format(const char c)
+void	safe_free(void **ptr)
 {
-	int	i;
-
-	i = 0;
-	while (i < 8)
+	if (ptr != 0 && *ptr != 0)
 	{
-		if (c == FORMAT[i])
-			return (FORMAT[i]);
-		i++;
+		free(*ptr);
+		*ptr = 0;
 	}
-	return (-1);
 }
 
-char	is_digit(const char c)
+void	init_option(t_option *option)
 {
-	int	i;
-
-	i = 0;
-	while (i < 10)
-	{
-		if (BASE[i] == c)
-			return (BASE[i]);
-		i++;
-	}
-	return (0);
+	option->format = 0;
+	option->plus = 0;
+	option->zero = 0;
+	option->minus = 0;
+	option->precision = -1;
+	option->width = 0;
+	option->sharp = 0;
+	option->empty = 0;
+	option->sign = 0;
 }
 
-int	ft_len(const char *s)
+int	check_error(t_option *option)
 {
-	int	i;
-
-	i = 0;
-	if (!s)
+	if (!option->format || !option->width)
 		return (-1);
-	if (!*s)
-		return (0);
-	while (s[i] != 0)
-		i++;
-	return (i);
-}
-
-char	*ft_strdup(const char *s1)
-{
-	char	*ret;
-	int		len;
-	char	*temp;
-
-	len = ft_len(s1);
-	ret = (char *)malloc(sizeof(char) * (len + 1));
-	if (!ret || !s1)
-		return (0);
-	temp = ret;
-	while (*s1)
+	if (option->empty && option->plus)
+		option->empty = 0;
+	if (option->zero && option->minus)
+		option->zero = 0;
+	if (option->format == 'p' || option->format == 'c' || option->format == '%')
 	{
-		*temp = *s1;
-		temp++;
-		s1++;
+		if (option->precision != -1)
+			return (-1);
 	}
-	*temp = 0;
+	return (1);
+}
+
+int	atoi_for_pf(const char **format)
+{
+	long long	temp;
+	int			ret;
+
+	temp = 0;
+	if (**format == '.')
+	{
+		(*format)++;
+		if (!is_format(**format) || **format == '-')
+			return (0);
+	}
+	while (is_digit(**format))
+	{
+		temp *= 10;
+		temp += **format - '0';
+		(*format)++;
+	}
+	ret = (int)temp;
 	return (ret);
 }
 
-char	*ft_strjoin(char *s1, char *s2)
+int	record_option(const char c, t_option *option)
 {
-	char	*ret;
-	char	*s1_cp;
-	char	*s2_cp;
-	int		i;
-
-	i = 0;
-	ret = (char *)malloc(sizeof(char) * (ft_len(s1) + ft_len(s2) + 1));
-	if (!ret || (!s1 && !s2))
+	if (c == '-')
+		option->minus = 1;
+	else if (c == '#')
+		option->sharp = 1;
+	else if (c == '+')
+		option->plus = 1;
+	else if (c == '0')
+		option->zero = 1;
+	else if (c == ' ')
+		option->empty = 1;
+	else
 		return (0);
-	s1_cp = s1;
-	s2_cp = s2;
-	while (s1 && *s1)
-		ret[i++] = *(s1++);
-	while (s2 && *s2)
-		ret[i++] = *(s2++);
-	ret[i] = 0;
-	safe_free((void **)&s1_cp);
-	safe_free((void **)&s2_cp);
-	return (ret);
+	return (1);
 }

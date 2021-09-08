@@ -225,3 +225,8 @@ precision 또한 undefined
 {0x00ccccccd} 0은 0x와 출력값 사이에 붙는다.
 
 0태그가 없으면 앞을 띄워줌
+## %%에서
+
+width 가능
+
+"-" 가능

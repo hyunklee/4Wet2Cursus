@@ -1,35 +1,20 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   format.c                                           :+:      :+:    :+:   */
+/*   format_n.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: hyunklee <hyunklee@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/09/04 01:42:23 by hyunklee          #+#    #+#             */
-/*   Updated: 2021/09/06 02:21:00 by hyunklee         ###   ########.fr       */
+/*   Updated: 2021/09/08 16:22:17 by hyunklee         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "ft_printf.h"
 
-int	count_number(int n, int base_num)
+int	count_number(unsigned long long n, int base_num, char format)
 {
 	int	cnt;
-
-	cnt = 0;
-	if (n < 0)
-		cnt++;
-	while (n != 0)
-	{
-		n /= (int)base_num;
-		cnt++;
-	}
-	return (cnt);
-}
-
-int u_count_number(unsigned long long n, int base_num, char format)
-{
-	int cnt;
 
 	cnt = 0;
 	while (n != 0)
@@ -42,24 +27,36 @@ int u_count_number(unsigned long long n, int base_num, char format)
 	return (cnt);
 }
 
-char	*ft_itoa(int n)
+char	*excpet_itoa(int n, t_option *option)
+{
+	if (n == -2147483648)
+	{
+		option->sign = '-';
+		return (ft_strdup("2147483648"));
+	}
+	else
+	{
+		option->sign = '0';
+		return (ft_strdup("0"));
+	}
+}
+
+char	*ft_itoa(int n, t_option *option)
 {
 	int		cnt;
 	char	*ret;
 
-	if (n == 0)
-		return (ft_strdup("0"));
-	if (n == -2147483648)
-		return (ft_strdup("-2147483648"));
-	cnt = count_number((long)n, 10);
+	if (n == -2147483648 || n == 0)
+		return (excpet_itoa(n, option));
+	if (n < 0)
+	{
+		option->sign = '-';
+		n *= -1;
+	}
+	cnt = count_number((unsigned long long)n, 10, option->format);
 	ret = (char *)malloc(sizeof(char) * (cnt + 1));
 	if (!ret)
 		return (0);
-	if (n < 0)
-	{
-		ret[0] = '-';
-		n *= -1;
-	}
 	ret[cnt] = '\0';
 	while (--cnt >= 0 && n > 0)
 	{
@@ -69,17 +66,17 @@ char	*ft_itoa(int n)
 	return (ret);
 }
 
-char	*change_to_str(unsigned long long n, int base_num, char format)
+char	*change_to_str(unsigned long long n, int base_num, t_option *option)
 {
 	int		cnt;
 	char	*ret;
 
-	cnt = u_count_number(n, base_num, format);
+	cnt = count_number(n, base_num, option->format);
 	ret = (char *)malloc(sizeof(char) * (cnt + 1));
 	if (!ret)
 		return (0);
 	ret[cnt] = '\0';
-	if (format == 'p')
+	if (option->format == 'p')
 	{
 		ret[0] = '0';
 		ret[1] = 'x';
@@ -87,26 +84,35 @@ char	*change_to_str(unsigned long long n, int base_num, char format)
 	while (--cnt >= 0 && n > 0)
 	{
 		ret[cnt] = BASE[n % (unsigned long long)base_num];
-		if (format == 'X' && (ret[cnt] >= 'a' && ret[cnt] <= 'f'))
+		if (option->format == 'X' && (ret[cnt] >= 'a' && ret[cnt] <= 'f'))
 			ret[cnt] -= 32;
 		n /= (unsigned long long)base_num;
 	}
 	return (ret);
 }
 
-char	*unitoa_base(unsigned long long n, char format)
+char	*unitoa_base(unsigned long long n, t_option *option)
 {
 	int	base_num;
 
-	if (n == 0)
-	{	if (format == 'p')
-			return (ft_strdup("0x0"));
-		else
-			return (ft_strdup("0"));
-	}
-	if (format == 'u')
+	if (option->format == 'u')
 		base_num = 10;
 	else
 		base_num = 16;
-	return (change_to_str(n, base_num, format));
+	if (option->format != 'p')
+		n = (unsigned int)n;
+	if (n == 0)
+	{
+		if (option->format == 'p')
+		{
+			option->sign = '0';
+			return (ft_strdup("0x0"));
+		}
+		else
+		{
+			option->sign = '0';
+			return (ft_strdup("0"));
+		}
+	}
+	return (change_to_str(n, base_num, option));
 }

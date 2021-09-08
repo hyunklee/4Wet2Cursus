@@ -5,19 +5,19 @@ CFLAGS = -c -Wall -Wextra -Werror
 AR = ar rc
 RM = rm -f
 SOURCES = ft_printf.c \
-			format.c \
-			format2.c \
+			format_n.c \
+			format_s.c \
 			parse.c \
-			utils.c \
-			utils2.c
+			ft_libft.c \
+			utils.c
 
 
 BONUS_SRCS = ft_printf.c \
-			format.c \
-			format2.c \
+			format_n.c \
+			format_s.c \
 			parse.c \
-			utils.c \
-			utils2.c
+			ft_libft.c \
+			utils.c
 
 
 OBJS = $(SOURCES:.c=.o)
